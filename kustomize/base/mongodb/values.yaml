@@ -1,0 +1,25 @@
+architecture: replicaset   
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "4Gi"
+    cpu: "2"
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  size: 10Gi
+
+auth:
+  enabled: true
+  rootUser: "mongo"  
+  rootPassword: "password"  
+  usernames: ["mongo"]  
+  passwords: ["password"]  
+  databases: ["mongo"]  
+
+
+  
