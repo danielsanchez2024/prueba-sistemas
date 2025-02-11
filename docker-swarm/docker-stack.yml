@@ -1,0 +1,118 @@
+services:
+  backoffice:
+    image: danielsanchez18/backoffice-prueba-sistemas:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_PORT=5000
+      - FLASK_HOST=0.0.0.0
+      - MONGO_HOST=mongodb.docker
+      - MONGO_PORT=27017
+      - MONGO_USER_FILE=/run/secrets/mongo_user
+      - MONGO_PASSWORD_FILE=/run/secrets/mongo_password
+      - MONGO_DB=user
+      - REDIS_HOST=redis.docker
+      - REDIS_PORT=6379
+      - ES_HOST=elasticsearch.docker
+      - ES_PORT=9200
+      - ES_SCHEME=http
+      - ES_INDEX=user
+    networks:
+      database:
+        aliases:
+          - backoffice.docker
+      nginx:
+        aliases:
+          - backoffice.docker
+    secrets:
+      - mongo_user
+      - mongo_password
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == microservice
+      
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_user
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_password
+      - MONGO_INITDB_DATABASE=user
+    networks:
+      database:
+        aliases:
+          - mongodb.docker
+    secrets:
+      - mongo_user
+      - mongo_password
+    volumes:
+      - /home/database1/persistent-data/mongodb:/data/db 
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == database
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      database:
+        aliases:
+          - redis.docker
+    volumes:
+      - /home/database1/persistent-data/redis:/data  
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == database
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      database:
+        aliases:
+          - elasticsearch.docker
+    volumes:
+      - /home/database1/persistent-data/elasticsearch:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == database
+        
+  ingress:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ingress/certs:/etc/nginx/ssl
+      - ./ingress/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      nginx:
+        aliases:
+          - ingress.docker
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  database:
+    driver: overlay
+  nginx:
+    driver: overlay
+
+secrets:
+  mongo_user:
+    file: ./secrets/mongo_user.txt
+  mongo_password:
+    file: ./secrets/mongo_password.txt
