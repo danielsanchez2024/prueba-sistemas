@@ -1,11 +1,13 @@
 architecture: replicaset   
 
+replicaCount: 1
+
 resources:
   requests:
-    memory: "1Gi"
+    memory: "2Gi"
     cpu: "500m"
   limits:
-    memory: "4Gi"
+    memory: "5Gi"
     cpu: "2"
 
 persistence:
@@ -16,10 +18,10 @@ persistence:
 auth:
   enabled: true
   rootUser: "mongo"  
-  rootPassword: "password"  
+  rootPassword: "password"
   usernames: ["mongo"]  
   passwords: ["password"]  
-  databases: ["mongo"]  
+  databases: ["user"]    
 
-
-  
+arbiter:
+  enabled: false

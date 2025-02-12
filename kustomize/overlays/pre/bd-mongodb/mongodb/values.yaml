@@ -1,0 +1,35 @@
+fullnameOverride: 'bd-mongo'
+architecture: replicaset   
+
+replicaCount: 1
+
+resources:
+  requests:
+    memory: "4Gi"
+    cpu: "2"
+  limits:
+    memory: "6Gi"
+    cpu: "3"
+
+volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 8Gi
+      storageClassName: standard  
+
+
+auth:
+  enabled: true
+  rootUser: "mongo-pre"  
+  rootPassword: "password-pre"
+  usernames: ["mongo-pre"]  
+  passwords: ["password-pre"]  
+  databases: ["user"]    
+
+
+arbiter:
+  enabled: false

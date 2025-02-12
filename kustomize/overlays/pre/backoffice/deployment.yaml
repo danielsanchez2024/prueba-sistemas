@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backoffice
+spec:
+  replicas: 2 
+  template:
+    spec:
+      containers:
+        - name: backoffice
+          env:
+            - name: MONGO_HOST
+              value: bd-mongo-headless-pre.mongodb-pre-ns
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            

@@ -6,4 +6,4 @@ resources:
   - backoffice-ingress.yaml
   - backoffice-secret.yaml
   - backoffice-service.yaml
-  - ../components/tls/secret.yaml
+  - backoffice-tls-secret.yaml
