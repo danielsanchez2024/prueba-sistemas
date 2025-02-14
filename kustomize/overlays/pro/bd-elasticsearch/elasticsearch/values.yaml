@@ -1,0 +1,45 @@
+replicas: 1 
+minimumMasterNodes: 1
+
+clusterName: elasticsearch
+clusterHealthCheckParams: 'wait_for_status=yellow&timeout=1s'
+clusterDeprecationIndexing: true
+
+fullnameOverride: 'bd-elasticsearch-master'
+
+imageTag: 7.16.3
+
+esConfig:
+  elasticsearch.yml: |
+    action.destructive_requires_name: true
+
+tests:
+  enabled: false
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    cpu: "1000m"
+    memory: "2Gi"
+
+initResources:
+  limits:
+    cpu: "50m"
+    memory: "256Mi"
+  requests:
+    cpu: "50m"
+    memory: "256Mi"
+
+esJavaOpts: "-Xms512m -Xmx512m"
+
+volumeClaimTemplate:
+  resources:
+    requests:
+      storage: 5Gi  
+
+persistence:
+  enabled: true
+
+maxUnavailable: 0
